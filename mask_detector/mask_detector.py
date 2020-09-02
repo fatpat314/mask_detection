@@ -30,7 +30,7 @@ def mask_detector(frame,faceNet,maskNet):
         # extract the confidence (i.e., probability) associated with the detection
         confidence = detections[0, 0, i, 2]
 
-        if confidence > 0.2: #0.5
+        if confidence > 0.5: #0.5
             # compute the (x, y)-coordinates of the bounding box for the objects
             box = detections[0, 0, i, 3:7] * np.array([width, height, width, height])
             (startX, startY, endX, endY) = box.astype("int")
@@ -71,56 +71,58 @@ faceNet = cv2.dnn.readNet(prototxtPath, weightsPath)
 # load the face mask detector model from disk
 maskNet = load_model("mask_detector0.model")
 
-# initialize the video stream
-print("[INFO] starting video stream...")
-vs = VideoStream(src=0).start()
 
-# loop ocer the frames from the video stream
-while True:
-    # grab the frame from the threaded video stream and resize it
-    # to have a maximum width of 400 pixles
-    frame = vs.read()
-    frame = imutils.resize(frame, width=400)
+def camera_stream():
+    # initialize the video stream
+    print("[INFO] starting video stream...")
+    vs = VideoStream(src=0).start()
+    # loop over the frames from the video stream
+    while True:
+        # grab the frame from the threaded video stream and resize it
+        # to have a maximum width of 400 pixles
+        frame = vs.read()
+        frame = imutils.resize(frame, width=400)
 
-    # detect faces in the frame and determine if they are wearing a mask or not
-    (locations, predictions) = mask_detector(frame, faceNet, maskNet)
+        # detect faces in the frame and determine if they are wearing a mask or not
+        (locations, predictions) = mask_detector(frame, faceNet, maskNet)
 
-    # loop over the detected face locations and their corresponding locations
-    for (box, predictions) in zip(locations, predictions):
-        (startX, startY, endX, endY) = box
-        (mask, withoutMask) = predictions
+        # loop over the detected face locations and their corresponding locations
+        for (box, predictions) in zip(locations, predictions):
+            (startX, startY, endX, endY) = box
+            (mask, withoutMask) = predictions
 
-        # determine the class label and color we'll use to draw the bounding box and text
-        label = "Mask"
-        if mask > withoutMask:
-            color = (0, 255, 0)
-        elif withoutMask > 0.999:
-            label = "No Mask"
+            # determine the class label and color we'll use to draw the bounding box and text
+            label = "Mask"
+            if mask > withoutMask:
+                color = (0, 255, 0)
+            elif withoutMask > 0.999:
+                label = "No Mask"
 
-        if label == "Mask":
-            color = (0, 255, 0)
-        elif withoutMask > 0.999:
-            color = (0, 0, 255)
-
-
-        # include the probability in the label
-        label = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
-        if withoutMask > 0.9999:
-            print("withoutMask: ", withoutMask, "\a")
+            if label == "Mask":
+                color = (0, 255, 0)
+            elif withoutMask > 0.999:
+                color = (0, 0, 255)
 
 
-        # display the label and bounding box rectangle on the output frame
-        cv2.putText(frame, label, (startX, startY - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
-        cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
+            # include the probability in the label
+            label = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
+            if withoutMask > 0.9999:
+                print("withoutMask: ", withoutMask, "\a")
 
-    # show the output frame
-    cv2.imshow("Frame", frame)
-    key = cv2.waitKey(1) & 0xFF
 
-    # if the 'q' key was pressed, break from the loop
-    if key == ord("q"):
-        break
+            # display the label and bounding box rectangle on the output frame
+            # cv2.putText(frame, label, (startX, startY - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
+            # cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
 
+        # show the output frame
+        cv2.imshow("Frame", frame)
+        key = cv2.waitKey(1) & 0xFF
+
+        # if the 'q' key was pressed, break from the loop
+        if key == ord("q"):
+            break
+
+camera_stream()
 # clean up
 cv2.destroyAllWindows()
 vs.stop()
