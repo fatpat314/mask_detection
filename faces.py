@@ -10,7 +10,7 @@ video_capture = cv2.VideoCapture(0)
 known_faces_encodings = []
 
 def image_list():
-    img_dir = "image"
+    img_dir = "images/dataset/with_mask"
     data_path = os.path.join(img_dir, '*g')
     files = glob.glob(data_path)
     # data = []
