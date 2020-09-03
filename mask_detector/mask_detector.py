@@ -64,12 +64,12 @@ def mask_detector(frame,faceNet,maskNet):
     return (locations, predictions)
 
 # load our serialized face detector model from disk
-prototxtPath = r"face_detector/model2/deploy.prototxt"
-weightsPath = r"face_detector/model2/res10_300x300_ssd_iter_140000.caffemodel"
+prototxtPath = r"face_detector/deploy.prototxt"
+weightsPath = r"face_detector/res10_300x300_ssd_iter_140000.caffemodel"
 faceNet = cv2.dnn.readNet(prototxtPath, weightsPath)
 
 # load the face mask detector model from disk
-maskNet = load_model("mask_detector0.model")
+maskNet = load_model("mask_detector.model")
 
 
 def camera_stream():
@@ -95,24 +95,24 @@ def camera_stream():
             label = "Mask"
             if mask > withoutMask:
                 color = (0, 255, 0)
-            elif withoutMask > 0.999:
+            elif withoutMask > 0.97:
                 label = "No Mask"
 
             if label == "Mask":
                 color = (0, 255, 0)
-            elif withoutMask > 0.999:
+            elif withoutMask > 0.97:
                 color = (0, 0, 255)
 
 
             # include the probability in the label
             label = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
-            if withoutMask > 0.9999:
+            if withoutMask > 0.97:
                 print("withoutMask: ", withoutMask, "\a")
 
 
             # display the label and bounding box rectangle on the output frame
-            # cv2.putText(frame, label, (startX, startY - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
-            # cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
+            cv2.putText(frame, label, (startX, startY - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
+            cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
 
         # show the output frame
         cv2.imshow("Frame", frame)
