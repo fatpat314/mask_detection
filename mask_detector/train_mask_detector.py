@@ -24,7 +24,7 @@ import os
 # and batch size
 INIT_LR = 1e-4
 EPOCHS = 20
-BS = 16 #32
+BS = 32
 
 DIRECTORY = r"dataset"
 CATEGORIES = ["with_mask", "without_mask"]
@@ -52,7 +52,7 @@ lb = LabelBinarizer()
 labels = lb.fit_transform(labels)
 labels = to_categorical(labels)
 
-data = np.array(data, dtype="float32")#"fload32"
+data = np.array(data, dtype="int")#"fload32"
 labels = np.array(labels)
 
 (trainX, testX, trainY, testY) = train_test_split(data, labels,
