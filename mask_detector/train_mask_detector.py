@@ -24,7 +24,7 @@ import os
 # and batch size
 INIT_LR = 1e-4
 EPOCHS = 20
-BS = 1
+BS = 32
 
 DIRECTORY = r"dataset"
 CATEGORIES = ["with_mask", "without_mask"]
