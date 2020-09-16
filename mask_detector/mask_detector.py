@@ -106,7 +106,7 @@ def camera_stream():
 
             # include the probability in the label
             label = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
-            if withoutMask > 0.97:
+            if withoutMask > 0.99:
                 print("withoutMask: ", withoutMask, "\a")
 
 
