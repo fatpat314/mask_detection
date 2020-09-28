@@ -103,11 +103,15 @@ def camera_stream():
             elif withoutMask > 0.97:
                 color = (0, 0, 255)
 
-
             # include the probability in the label
             label = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
             if withoutMask > 0.99:
                 print("withoutMask: ", withoutMask, "\a")
+                cv2.imshow("Frame", frame)
+            else:
+                """Figure out how to close the video window"""
+                pass
+
 
 
             # display the label and bounding box rectangle on the output frame
@@ -115,7 +119,7 @@ def camera_stream():
             cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
 
         # show the output frame
-        cv2.imshow("Frame", frame)
+        # cv2.imshow("Frame", frame)
         key = cv2.waitKey(1) & 0xFF
 
         # if the 'q' key was pressed, break from the loop
